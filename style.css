@@ -1,56 +1,67 @@
-* {
+*
+{
+    padding: 0;
+    margin: 0;
     box-sizing: border-box;
 }
 
-#postWrapper {
+/*-------------------------------------------------------------------------*/
+.post__form {
+    margin: 15px;
+    font-family: "Roboto Light",sans-serif;
+    line-height: 24px;
+    font-size: 16px;
+}
+
+.post {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    border: 2px solid black;
-    min-height: 100vh;
     justify-content: space-around;
+    min-height: 100vh;
+}
+
+.post-border {
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+.post__title {
     text-align: center;
 }
 
-.title {
-    border: 1px solid black;
-    width: 95%;
+.post__description {
+    text-align: center;
 }
 
-.description {
-    border: 1px solid black;
-    width: 95%;
+.post-comments__title {
+    text-align: center;
+}
+.post-comments__list{
+    list-style: none;
+    padding-bottom: 10px;
+}
+.post-comments__list:last-of-type{
+    padding-bottom: 0;
 }
 
-.comments {
-    border: 1px solid black;
-    width: 95%;
-    text-align: left;
-}
-
-.comment-list {
-    list-style-type: none;
-}
-
-
-.comment__form {
-    padding: 10px 5px;
-    border: 1px solid black;
-    width: 95%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.comment-form__group {
     margin: 10px;
 }
 
-.submit-btn {
-    background: inherit;
-    padding: 10px 15px;
-    border-radius: 7px;
-    margin: 5px 0px;
-    align-self: center;
+.comment-form__input {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: transparent;
+    outline: none;
+    transition: 0.3s;
+    padding: 10px;
 }
 
-li:last-of-type {
-    padding-bottom: 10px;
+.form-submit {
+    align-self: center;
+    background: inherit;
+    border-radius: 7px;
+    border: 2px solid #2d2b2b;
 }
