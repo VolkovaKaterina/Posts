@@ -92,12 +92,11 @@ class Post {
         })
 
         return `
-            <div id="postComments">
-                <div  class="post-comments post-border">
+                <div id="postComments" class="post-comments post-border">
                     <h3 class="post-comments__title">List of comments</h3>
                     ${allComments.join("")}
                 </div>
-            </div>`
+            `
     }
 
     CommentFormRender() {
@@ -123,6 +122,20 @@ class Post {
              `
     }
 
+    newPostRender(comment) {
+        let postList = document.createElement('ul');
+        postList.classList.add("post-comments__list")
+        postList.innerHTML =
+            `<li class = "post-comments__list-item" > 
+            <strong>Title: ${comment.name}</strong></li>
+        <li class="post-comments__list-item">
+            <strong>Email:</strong> ${comment.email}</li>
+        <li class="post-comments__list-item">
+            ${comment.body}</li>`
+
+        return postList
+    }
+
     async addComment() {
         let commentText = document.querySelector('#inputText').value
         let commentEmail = document.querySelector('#inputEmail').value
@@ -132,11 +145,11 @@ class Post {
             email: commentEmail,
             name: commentTitle
         }
-        let postComment = await FetchData.controller(this.commentApi + this.postNumber, `POST`, commentObj);
-        console.log(postComment);
-        this.comments.push(postComment)
-        const postComments = document.querySelector('#postComments')
-        postComments.innerHTML = this.commentsRender()
+        let newPostComment = await FetchData.controller(this.commentApi + this.postNumber, `POST`, commentObj);
+        console.log(newPostComment);
+        this.comments.push(newPostComment)
+        const postComments = this.postForm.querySelector('#postComments')
+        postComments.appendChild(this.newPostRender(newPostComment))
     }
 
 }
