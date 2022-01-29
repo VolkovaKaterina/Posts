@@ -22,8 +22,10 @@ class Post {
     constructor(postNumber, postForm) {
         this.postNumber = postNumber
         this.postForm = postForm
+
         this.postApi = 'https://jsonplaceholder.typicode.com/posts/'
         this.commentApi = 'https://jsonplaceholder.typicode.com/comments?postId='
+
         this.postForm.addEventListener('submit', async e => {
             e.preventDefault()
             this.addComment()
@@ -72,7 +74,16 @@ class Post {
     }
 
     getOptions() {
-        return [this.postTextRender(), this.commentsRender(), this.CommentFormRender()].join("")
+        return [this.postTextRender(), this.commentsRender(), this.CommentFormRender()].join("");
+    }
+
+    getCommentText(comments) {
+        return comments.map(comment => {
+            return `
+             <p><strong>Title: ${comment.name}</strong></p>
+             <p><strong>Email:</strong> ${comment.email}</p>
+             <p><strong>Comment:</strong> ${comment.body}</p>`
+        })
     }
 
     postTextRender() {
@@ -82,76 +93,63 @@ class Post {
     }
 
     commentsRender() {
-        let allComments = this.comments.map(comment => {
-            return `
-            <ul class="post-comments__list">
-                <li class="post-comments__list-item"><strong>Title: ${comment.name}</strong></li>
-                <li class="post-comments__list-item"><strong>Email:</strong> ${comment.email}</li>
-                <li class="post-comments__list-item">${comment.body}</li>
-            </ul>`
-        })
-
         return `
-                <div id="postComments" class="post-comments post-border">
-                    <h3 class="post-comments__title">List of comments</h3>
-                    ${allComments.join("")}
-                </div>
-            `
+        <div class="post-comments post-border">
+                <h3 class="post-comments__title">List of comments</h3>
+                <ul id = "commentsList" class="post-comments__list">
+                    <li class="post-comments__list-item">
+                        ${this.getCommentText(this.comments)
+            .join('</li><li class="post-comments__list-item">')}
+                    </li>
+                </ul>
+         </div>`
     }
 
     CommentFormRender() {
         return `
-            <div class="comment-form post-border">
-                <div class="comment-form__group">
-                  <label class="comment-form__label">Email
-                    <input id="inputEmail" class="comment-form__input" required>
-                  </label>
-                </div>
-                <div class="comment-form__group">
-                  <label class="comment-form__label">Title
-                    <input id="inputTitle" class="comment-form__input input-title" required>
-                  </label>
-                </div>
-                <div class="comment-form__group">
-                  <label class="comment-form__label">Your comment
-                    <input id="inputText" class="comment-form__input" required>
-                  </label>
-                </div>
-            </div>
-        <button class="form-submit post-border" id="formSubmit" type="submit">Add Comment</button>
-             `
-    }
-
-    newPostRender(comment) {
-        let postList = document.createElement('ul');
-        postList.classList.add("post-comments__list")
-        postList.innerHTML =
-            `<li class = "post-comments__list-item" > 
-            <strong>Title: ${comment.name}</strong></li>
-        <li class="post-comments__list-item">
-            <strong>Email:</strong> ${comment.email}</li>
-        <li class="post-comments__list-item">
-            ${comment.body}</li>`
-
-        return postList
+        <div class="comment-form post-border">
+        <div class="comment-form__group">
+            <label class="comment-form__label">Email
+                <input class="comment-form__input" id="inputEmail" required>
+            </label>
+        </div>
+        <div class="comment-form__group">
+            <label class="comment-form__label">Title
+                <input class="comment-form__input input-title" id="inputTitle" required>
+            </label>
+        </div>
+        <div class="comment-form__group">
+            <label class="comment-form__label">Your comment
+                <input class="comment-form__input" id="inputText" required>
+            </label>
+        </div>
+    </div>
+    <button class="form-submit post-border" id="formSubmit" type="submit">Add Comment</button> `
     }
 
     async addComment() {
         let commentText = document.querySelector('#inputText').value
         let commentEmail = document.querySelector('#inputEmail').value
         let commentTitle = document.querySelector('#inputTitle').value
+
         let commentObj = {
             body: commentText,
             email: commentEmail,
             name: commentTitle
         }
+
         let newPostComment = await FetchData.controller(this.commentApi + this.postNumber, `POST`, commentObj);
         console.log(newPostComment);
         this.comments.push(newPostComment)
-        const postComments = this.postForm.querySelector('#postComments')
-        postComments.appendChild(this.newPostRender(newPostComment))
-    }
 
+        const postComments = this.postForm.querySelector('#commentsList')
+
+        const commentLi = document.createElement('li')
+        commentLi.className = "post-comments__list-item";
+        commentLi.innerHTML = this.getCommentText([newPostComment])
+
+        postComments.appendChild(commentLi)
+    }
 }
 
 const postForm = document.querySelector('#postForm')

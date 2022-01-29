@@ -37,11 +37,11 @@
 .post-comments__title {
     text-align: center;
 }
-.post-comments__list{
+.post-comments__list-item{
     list-style: none;
     padding-bottom: 10px;
 }
-.post-comments__list:last-of-type{
+.post-comments__list-item:last-of-type{
     padding-bottom: 0;
 }
 
