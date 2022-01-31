@@ -1,17 +1,17 @@
 class FetchData {
-    static async controller(url, method = 'GET', obj) {
+    static async controller(url, method = "GET", obj) {
         let options = {
             method: method,
             headers: {
-                'content-type': 'application/json; charset=UTF-8',
+                "content-type": "application/json; charset=UTF-8",
             }
         };
         if (obj)
-            options.body = JSON.stringify(obj)
+            options.body = JSON.stringify(obj);
 
-        let request = await fetch(url, options)
+        let request = await fetch(url, options);
         if (request.ok) {
-            return request.json()
+            return request.json();
         } else {
             throw request.status;
         }
@@ -20,76 +20,67 @@ class FetchData {
 
 class Post {
     constructor(postNumber, postForm) {
-        this.postNumber = postNumber
-        this.postForm = postForm
+        this.postNumber = postNumber;
+        this.postForm = postForm;
 
-        this.postApi = 'https://jsonplaceholder.typicode.com/posts/'
-        this.commentApi = 'https://jsonplaceholder.typicode.com/comments?postId='
+        this.postApi = "https://jsonplaceholder.typicode.com/posts/";
+        this.commentApi = "https://jsonplaceholder.typicode.com/comments?postId=";
 
-        this.postForm.addEventListener('submit', async e => {
-            e.preventDefault()
-            this.addComment()
-            this.postForm.reset()
-        })
+        this.onSubmitForm = this.postForm.addEventListener("submit", async e => {
+            e.preventDefault();
+            this.addComment();
+            this.postForm.reset();
+        });
     }
 
     get title() {
-        return this.postTitle
+        return this.postTitle;
     }
 
     set title(title) {
-        this.postTitle = title
+        this.postTitle = title;
     }
 
     get postText() {
-        return this.text
+        return this.text;
     }
 
     set postText(text) {
-        this.text = text
+        this.text = text;
     }
 
     get comments() {
-        return this.postComments
+        return this.postComments;
     }
 
     set comments(comments) {
-        this.postComments = comments
+        this.postComments = comments;
     }
 
     async printPost() {
         try {
             let post = await FetchData.controller(this.postApi + this.postNumber);
-            this.postText = post.body
-            this.title = post.title
-            this.comments = await FetchData.controller(this.commentApi + this.postNumber)
-            this.render()
+            this.postText = post.body;
+            this.title = post.title;
+            this.comments = await FetchData.controller(this.commentApi + this.postNumber);
+            this.render();
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     }
 
     render() {
-        this.postForm.innerHTML = ` <div class="post post-border">${this.getOptions()}</div>`
+        this.postForm.innerHTML = ` <div class="post post-border">${this.getComponents()}</div>`;
     }
 
-    getOptions() {
-        return [this.postTextRender(), this.commentsRender(), this.CommentFormRender()].join("");
+    getComponents() {
+        return [this.postRender(), this.commentsRender(), this.commentFormRender()].join("");
     }
 
-    getCommentText(comments) {
-        return comments.map(comment => {
-            return `
-             <p><strong>Title: ${comment.name}</strong></p>
-             <p><strong>Email:</strong> ${comment.email}</p>
-             <p><strong>Comment:</strong> ${comment.body}</p>`
-        })
-    }
-
-    postTextRender() {
+    postRender() {
         return `
             <h1 class="post__title post-border">${this.title}</h1>
-            <div class="post__description post-border">${this.postText}</div>`
+            <div class="post__description post-border">${this.postText}</div>`;
     }
 
     commentsRender() {
@@ -98,14 +89,14 @@ class Post {
                 <h3 class="post-comments__title">List of comments</h3>
                 <ul id = "commentsList" class="post-comments__list">
                     <li class="post-comments__list-item">
-                        ${this.getCommentText(this.comments)
-            .join('</li><li class="post-comments__list-item">')}
+                        ${this.getCommentsTemplate(this.comments)
+            .join("</li><li class=\"post-comments__list-item\">")}
                     </li>
                 </ul>
-         </div>`
+         </div>`;
     }
 
-    CommentFormRender() {
+    commentFormRender() {
         return `
         <div class="comment-form post-border">
         <div class="comment-form__group">
@@ -124,34 +115,47 @@ class Post {
             </label>
         </div>
     </div>
-    <button class="form-submit post-border" id="formSubmit" type="submit">Add Comment</button> `
+    <button class="comment-form__submit post-border" id="formSubmit" type="submit">Add Comment</button> `;
+    }
+
+    getCommentsTemplate(comments) {
+        return comments.map(comment => {
+            return `
+             <p><strong>Title: ${comment.name}</strong></p>
+             <p><strong>Email:</strong> ${comment.email}</p>
+             <p><strong>Comment:</strong> ${comment.body}</p>`;
+        });
+    }
+
+    createNewComment(newComment) {
+        const postComments = this.postForm.querySelector("#commentsList");
+
+        const commentLi = document.createElement("li");
+        commentLi.className = "post-comments__list-item";
+        commentLi.innerHTML = this.getCommentsTemplate([newComment]);
+
+        postComments.appendChild(commentLi);
     }
 
     async addComment() {
-        let commentText = document.querySelector('#inputText').value
-        let commentEmail = document.querySelector('#inputEmail').value
-        let commentTitle = document.querySelector('#inputTitle').value
+        let commentText = document.querySelector("#inputText").value;
+        let commentEmail = document.querySelector("#inputEmail").value;
+        let commentTitle = document.querySelector("#inputTitle").value;
 
         let commentObj = {
             body: commentText,
             email: commentEmail,
             name: commentTitle
-        }
+        };
 
-        let newPostComment = await FetchData.controller(this.commentApi + this.postNumber, `POST`, commentObj);
+        let newPostComment = await FetchData.controller(this.commentApi + this.postNumber, "POST", commentObj);
         console.log(newPostComment);
-        this.comments.push(newPostComment)
 
-        const postComments = this.postForm.querySelector('#commentsList')
+        this.createNewComment(newPostComment);
 
-        const commentLi = document.createElement('li')
-        commentLi.className = "post-comments__list-item";
-        commentLi.innerHTML = this.getCommentText([newPostComment])
-
-        postComments.appendChild(commentLi)
     }
 }
 
-const postForm = document.querySelector('#postForm')
-const post1 = new Post(2, postForm)
-post1.printPost()
+const postForm = document.querySelector("#postForm");
+const post1 = new Post(1, postForm);
+post1.printPost();

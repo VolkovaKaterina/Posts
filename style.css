@@ -18,6 +18,8 @@
     flex-direction: column;
     justify-content: space-around;
     min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .post-border {
@@ -59,7 +61,7 @@
     padding: 10px;
 }
 
-.form-submit {
+.comment-form__submit {
     align-self: center;
     background: inherit;
     border-radius: 7px;
