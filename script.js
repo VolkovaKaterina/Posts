@@ -1,6 +1,6 @@
 class FetchData {
     static async controller(url, method = "GET", obj) {
-        let options = {
+        const options = {
             method: method,
             headers: {
                 "content-type": "application/json; charset=UTF-8",
@@ -9,7 +9,7 @@ class FetchData {
         if (obj)
             options.body = JSON.stringify(obj);
 
-        let request = await fetch(url, options);
+        const request = await fetch(url, options);
         if (request.ok) {
             return request.json();
         } else {
@@ -26,7 +26,7 @@ class Post {
         this.postApi = "https://jsonplaceholder.typicode.com/posts/";
         this.commentApi = "https://jsonplaceholder.typicode.com/comments?postId=";
 
-        this.onSubmitForm = this.postForm.addEventListener("submit", async e => {
+        this.postForm.addEventListener("submit", async e => {
             e.preventDefault();
             this.addComment();
             this.postForm.reset();
@@ -138,17 +138,17 @@ class Post {
     }
 
     async addComment() {
-        let commentText = document.querySelector("#inputText").value;
-        let commentEmail = document.querySelector("#inputEmail").value;
-        let commentTitle = document.querySelector("#inputTitle").value;
+        const commentText = document.querySelector("#inputText").value;
+        const commentEmail = document.querySelector("#inputEmail").value;
+        const commentTitle = document.querySelector("#inputTitle").value;
 
-        let commentObj = {
+        const commentObj = {
             body: commentText,
             email: commentEmail,
             name: commentTitle
         };
 
-        let newPostComment = await FetchData.controller(this.commentApi + this.postNumber, "POST", commentObj);
+        const newPostComment = await FetchData.controller(this.commentApi + this.postNumber, "POST", commentObj);
         console.log(newPostComment);
 
         this.createNewComment(newPostComment);
